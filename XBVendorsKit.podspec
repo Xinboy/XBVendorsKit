@@ -1,5 +1,5 @@
 #
-# Be sure to run `pod lib lint XBVendorsKit.podspec' to ensure this is a
+# Be sure to run `pod lib lint FunctionModule.podspec' to ensure this is a
 # valid spec before submitting.
 #
 # Any lines starting with a # are optional, but their use is encouraged
@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'XBVendorsKit'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of XBVendorsKit.'
+  s.version          = '0.0.1'
+  s.summary          = '第三方组件'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,25 +18,30 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+TODO: 第三方组件，主要集合各种第三方的扩展以及封装
                        DESC
 
-  s.homepage         = 'https://github.com/xinbo.hong@hotmail.com/XBVendorsKit'
+  s.homepage         = 'https://dev.tencent.com/u/Xinbo2016/p/XBVendorsKit/git'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'xinbo.hong@hotmail.com' => 'xinbo.hong@hotmail.com' }
-  s.source           = { :git => 'https://github.com/xinbo.hong@hotmail.com/XBVendorsKit.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.author           = { '洪新博' => 'xinbo.hong@hotmail.com' }
+  s.source           = { :git => 'https://git.dev.tencent.com/Xinbo2016/XBVendorsKit.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '8.0'
-
-  s.source_files = 'XBVendorsKit/Classes/**/*'
   
+  s.source_files = 'XBVendorsKit/Classes/**/*'
   # s.resource_bundles = {
-  #   'XBVendorsKit' => ['XBVendorsKit/Assets/*.png']
+  #   'FunctionModule' => ['XBVendorsKit/Assets/*.png']
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  
+  s.frameworks = 'UIKit', 'Foundation'
+  s.dependency 'Masonry'
+  s.dependency 'SVProgressHUD'
+  s.dependency 'AFNetworking'
+  s.dependency 'MJRefresh'
+  s.dependency 'JPush'
+  s.dependency 'Crashlytics'
+
 end

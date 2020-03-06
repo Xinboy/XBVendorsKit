@@ -1,0 +1,6 @@
+framework module XBVendorsKit {
+  umbrella header "XBVendorsKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
