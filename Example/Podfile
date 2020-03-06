@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '8.0'
+
+target 'XBVendorsKit_Example' do
+  pod 'XBVendorsKit', :path => '../'
+
+  target 'XBVendorsKit_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
