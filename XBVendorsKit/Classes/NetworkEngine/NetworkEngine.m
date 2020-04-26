@@ -10,6 +10,9 @@
 #import <AdSupport/AdSupport.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
 #import <AFNetworking.h>
+
+
+#import "NetworkUtils.h"
 @interface NetworkEngine ()
 
 @property (nonatomic, assign, getter=isGettingToken) BOOL gettingToken;
@@ -27,33 +30,6 @@
 + (void)fetchToken {
     [self fetchTokenWithIndex:0];
 }
-
-#pragma mark - **************** 判断网络状态方法
-+ (id)fetchSSIDInfo {
-    NSArray *ifs = (__bridge_transfer id)CNCopySupportedInterfaces();
-    id info = nil;
-    for (NSString *ifnam in ifs) {
-        info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifnam);
-        if (info && [info count]) {
-            break;
-        }
-    }
-    return info;
-}
-
-
-
-+ (NetworkStatus)networkStatuWithCurrent {
-    switch ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus]) {
-        case NotReachable:
-            return NotReachable;
-        case ReachableViaWWAN:
-            return ReachableViaWWAN;
-        case ReachableViaWiFi:
-            return ReachableViaWiFi;
-    }
-}
-
 
 #pragma mark - **************** 网络请求相关方法
 /**
@@ -335,6 +311,76 @@
         [[NetworkEngine sharedInstance].normalNetQueue addOperation:op];
     }
     
+    
+}
+
+
+//根据服务器信息检查 App Store 版本
++ (void)showHasNewVersionUpdates {
+    //获取本地版本
+    //去掉.
+    NSString *oldStr = [[NetworkUtils stringWithAppLocalVersion] stringByReplacingOccurrencesOfString:@"." withString:@""];
+    
+    [NetworkEngine basedGETRequestWithUrl:@"version" params:nil isToken:NO requestCount:0 response:^(id resposObject) {
+        NSDictionary *dataDict = resposObject[@"data"];
+                NSString *newStr = [dataDict[@"version"] stringByReplacingOccurrencesOfString:@"." withString:@""];
+                
+                if ([newStr intValue] > [oldStr intValue]) {
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"有新版本可供更新" message:nil preferredStyle:UIAlertControllerStyleAlert];
+                    
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"更新" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        NSString *appURLStr = @"http://itunes.apple.com/lookup?id=";
+                        NSString *appIDStr = kAppID;
+                        NSString *urlStr = [NSString stringWithFormat:@"%@%@", appURLStr, appIDStr];
+                        NSURL *url = [NSURL URLWithString:urlStr];
+                        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+                        NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            NSURLSessionTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                                NSError *err = nil;
+                                NSDictionary *appInfoDict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err];
+                                if (err) {
+                                    NSLog(@"%@",err);
+                                    return;
+                                }
+                                NSArray *resultArray = [appInfoDict objectForKey:@"results"];
+                                if (![resultArray count]) {
+                                    NSLog(@"error : resultArray == nil");
+                                    return;
+                                }
+                                NSDictionary *infoDict = [resultArray objectAtIndex:0];
+                                NSString *updateUrl = [[infoDict objectForKey:@"trackViewUrl"] stringByReplacingOccurrencesOfString:@"https" withString:@"itms-apps"];
+                                NSString *systemV = [UIDevice currentDevice].systemVersion;
+                                if (systemV.doubleValue >= 10.0) {
+                                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:updateUrl] options:@{} completionHandler:^(BOOL success) {
+                                        
+                                    }];
+                                } else {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:updateUrl]];
+        #pragma clang diagnostic pop
+                                }
+                            }];
+                            [task resume];
+                            
+                        });
+                    }];
+                    [alertController addAction:okAction];
+                    //!!!!!!!后期加入可获取的 是否强制更新变量
+                    if (1) {
+                        //选择更新
+                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                            
+                        }];
+                        [alertController addAction:cancelAction];
+                    }
+                    //强制更新
+                    [[UIApplication sharedApplication].keyWindow.rootViewController.childViewControllers.lastObject presentViewController:alertController animated:YES completion:nil];
+                }
+    } failed:^(NSString *failedObject) {
+        
+    }];
     
 }
 

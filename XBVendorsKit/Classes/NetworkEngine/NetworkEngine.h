@@ -7,33 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Reachability.h"
 #import "NetworkHeader.h"
 @interface NetworkEngine : NSObject
 
 
 
 + (instancetype)sharedInstance;
-#pragma mark - **************** 判断网络状态方法
-/**
- WiFi：获取WiFi信息
- 
- @return WiFi信息
- */
-+ (id)fetchSSIDInfo;
-
-/**
- Network：获取当前网络状况
- 
- @return 网络状况：0,无网络 1,DATA流量 2,WiFi
- */
-+ (NetworkStatus)networkStatuWithCurrent;
 
 #pragma mark - **************** 网络请求相关方法
 
 /// 获取token会暂停当前队列所有需要Token的请求
 + (void)fetchToken;
-
 
 
 /// Post网络请求
@@ -49,6 +33,11 @@
                     requestCount:(NSInteger)count
                         response:(void (^)(id resposObject))response
                          failed:(void (^)(NSString *failedObject))failed;
+
+
+/// 根据服务器信息检查 App Store 版本
++ (void)showHasNewVersionUpdates;
+
 @end
 
 
@@ -60,7 +49,7 @@
 @property (nonatomic, assign) NSInteger times;
 
 /** 请求类型 */
-@property (nonatomic, assign) RequestType requestType;
+//@property (nonatomic, assign) RequestType requestType;
 
 /** 请求url */
 @property (nonatomic, strong) NSString *urlStr;
@@ -75,6 +64,4 @@
 @property (nonatomic, assign) BOOL isRequesting;
 
 @end
-————————————————
-版权声明：本文为CSDN博主「H.A.N」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/u010960265/article/details/82905867
+

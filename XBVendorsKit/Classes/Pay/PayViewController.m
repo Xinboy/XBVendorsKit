@@ -10,8 +10,9 @@
 #import "PayTypeCell.h"
 #import "Masonry.h"
 
-#import <WXApi.h>
-#import <AlipaySDK/AlipaySDK.h>
+//#import <WXApi.h>
+//#import <AlipaySDK/AlipaySDK.h>
+
 
 static NSString *const kWXPayResultNotificationKey = @"kWXPayResultNotificationKey";
 static NSString *const kAliPayResultNotificationKey  = @"kAliPayResultNotificationKey";
@@ -109,75 +110,75 @@ static NSString *const kAliPayResultNotificationKey  = @"kAliPayResultNotificati
     
 }
 #pragma mark - --- Event Response ---
-- (void)sendWxPay {
-    if (![WXApi isWXAppInstalled]) {
-        //微信未安装
-        return;
-    }
-    PayReq *req = [[PayReq alloc] init];
+//- (void)sendWxPay {
+//    if (![WXApi isWXAppInstalled]) {
+//        //微信未安装
+//        return;
+//    }
+//    PayReq *req = [[PayReq alloc] init];
     //    req.partnerId = model.partnerid;
     //    req.prepayId = model.prepayid;
     //    req.nonceStr = model.noncestr;
     //    req.timeStamp = model.timestamp;
     //    req.package = model.pay_package;
     //    req.sign = model.sign;
-    [WXApi sendReq:req];
-}
+//    [WXApi sendReq:req];
+//}
 
-- (void)wxpayResult:(NSNotification *)notif {
-    BaseResp *resp = [notif.userInfo objectForKey:@"resp"];
-    NSString *memo;
-    if([resp isKindOfClass:[PayResp class]]) {
-        switch (resp.errCode) {
-            case WXSuccess:
-                memo = @"支付成功";
-                break;
-            case WXErrCodeCommon:
-                memo = @"支付错误";
-                break;
-            case WXErrCodeUserCancel:
-                memo = @"用户取消";
-                break;
-            default:
-                memo = resp.errStr;
-                break;
-        }
-    }
-    
-}
-
-- (void)sendAliPAy {
-    [[AlipaySDK defaultService] payOrder:@"" fromScheme:@"temp" callback:^(NSDictionary *resultDic) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kAliPayResultNotificationKey object:nil userInfo:@{@"resultDic":resultDic}];
-    }];
-}
-
-
-- (void)alipayResult:(NSNotification *)notif {
-    NSDictionary *resultDict = [notif.userInfo objectForKey:@"resultDic"];
-    NSString *resultStatus = resultDict[@"resultStatus"];
-    NSString *memo;
-    switch ([resultStatus integerValue]) {
-        case 9000:
-            memo = @"支付成功!";
-            break;
-        case 4000:
-            memo = @"订单支付失败!";
-            break;
-        case 6001:
-            memo = @"用户中途取消!";
-            break;
-        case 6002:
-            memo = @"网络连接出错!";
-            break;
-        case 8000:
-            memo = @"正在处理中...";
-            break;
-        default:
-            memo = [resultDict objectForKey:@"memo"];
-            break;
-    }
-}
+//- (void)wxpayResult:(NSNotification *)notif {
+//    BaseResp *resp = [notif.userInfo objectForKey:@"resp"];
+//    NSString *memo;
+//    if([resp isKindOfClass:[PayResp class]]) {
+//        switch (resp.errCode) {
+//            case WXSuccess:
+//                memo = @"支付成功";
+//                break;
+//            case WXErrCodeCommon:
+//                memo = @"支付错误";
+//                break;
+//            case WXErrCodeUserCancel:
+//                memo = @"用户取消";
+//                break;
+//            default:
+//                memo = resp.errStr;
+//                break;
+//        }
+//    }
+//    
+//}
+//
+//- (void)sendAliPAy {
+//    [[AlipaySDK defaultService] payOrder:@"" fromScheme:@"temp" callback:^(NSDictionary *resultDic) {
+//        [[NSNotificationCenter defaultCenter] postNotificationName:kAliPayResultNotificationKey object:nil userInfo:@{@"resultDic":resultDic}];
+//    }];
+//}
+//
+//
+//- (void)alipayResult:(NSNotification *)notif {
+//    NSDictionary *resultDict = [notif.userInfo objectForKey:@"resultDic"];
+//    NSString *resultStatus = resultDict[@"resultStatus"];
+//    NSString *memo;
+//    switch ([resultStatus integerValue]) {
+//        case 9000:
+//            memo = @"支付成功!";
+//            break;
+//        case 4000:
+//            memo = @"订单支付失败!";
+//            break;
+//        case 6001:
+//            memo = @"用户中途取消!";
+//            break;
+//        case 6002:
+//            memo = @"网络连接出错!";
+//            break;
+//        case 8000:
+//            memo = @"正在处理中...";
+//            break;
+//        default:
+//            memo = [resultDict objectForKey:@"memo"];
+//            break;
+//    }
+//}
 
 #pragma mark - --- Private Methods ---
 - (void)showDataFromService {
